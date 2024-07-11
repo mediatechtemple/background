@@ -29,7 +29,8 @@ function DashboardBody() {
 
     const updateCandidateListByClientId = async () => {
         try {
-            const clientId = localStorage.getItem("client_id");
+             if(typeof window !=='undefined'){
+            const clientId = localStorage.getItem("client_id");}
             if (!clientId) {
                 throw new Error("Client ID is not available in localStorage.");
             }
@@ -56,7 +57,7 @@ function DashboardBody() {
                             Download as Excel
                         </Button>
                     </div>
-                    <div style={{ margin: "10px" }}>
+                  /*  <div style={{ margin: "10px" }}>
                        {localStorage.getItem("user_role") === '1' && <Button
                             variant="contained"
                             startIcon={<BsPlus style={{ fontSize: '1.2em' }} />}
@@ -74,7 +75,7 @@ function DashboardBody() {
                         </Button>
                         </Link>
                         }
-                    </div>
+                    </div>*/
                 </div>
             </div>
             <CompaniesList 
