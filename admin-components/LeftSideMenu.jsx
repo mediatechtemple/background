@@ -7,9 +7,9 @@ const LeftSideMenu = () => {
     <div className="bg-light text-white p-4" style={{ height: '80vh' }}>
       <ul className="list-unstyled">
         <MenuItem href="/admin/admin-dashboard" icon={FaChartBar} label="Dashboard" />
-        {localStorage.getItem("user_role") !== '3' &&     <MenuItem href="/admin/companies" icon={FaUsers} label="Companies" />}
+       /* {localStorage.getItem("user_role") !== '3' &&     <MenuItem href="/admin/companies" icon={FaUsers} label="Companies" />}
        {localStorage.getItem("user_role") === '1' &&  <MenuItem href="/admin/candidates" icon={FaUser} label="Candidates" />}
-       {localStorage.getItem("user_role") !== '3' &&   <MenuItem href="/admin/internal-team" icon={FaUserCog} label="Internal Team" /> }
+       {localStorage.getItem("user_role") !== '3' &&   <MenuItem href="/admin/internal-team" icon={FaUserCog} label="Internal Team" /> }*/
       </ul>
     </div>
   );
