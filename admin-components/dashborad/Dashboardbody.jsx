@@ -1,10 +1,9 @@
-"use client";
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, Grid } from '@mui/material';
 import { BsPlus, BsDownload } from 'react-icons/bs';
 import NewClientForm from '../../app/admin/companies/companies-components/NewClientForm';
 import CompaniesList from '../../app/admin/companies/companies-components/CompaniesList';
-import { BASE_URL, _getAll } from '@/utils/apiUtils'; 
+import { _getAll } from '@/utils/apiUtils'; // Assuming BASE_URL is already set in apiUtils
 import axios from 'axios';
 import Link from 'next/link';
 
@@ -12,9 +11,14 @@ function DashboardBody() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedClient, setSelectedClient] = useState(null);
     const [clientListData, setClientListData] = useState([]);
+    const [userRole, setUserRole] = useState(null);
 
     useEffect(() => {
-        updateCandidateListByClientId(); 
+        // Simulating userRole for testing, replace with actual logic
+        setUserRole('1'); // Example: Set userRole based on your logic
+
+        // Fetch client list data on component mount
+        updateCandidateListByClientId();
     }, []);
 
     const handleOpenModal = (client) => {
@@ -29,10 +33,10 @@ function DashboardBody() {
 
     const updateCandidateListByClientId = async () => {
         try {
-            const clientId = localStorage.getItem("client_id");
-            if (!clientId) {
-                throw new Error("Client ID is not available in localStorage.");
-            }
+            // Simulate client ID fetch logic, replace with actual implementation
+            const clientId = 'example_client_id'; // Replace with actual client ID logic if needed
+
+            // Fetch client list data
             const response = await _getAll(`/client/${clientId}/candidates`);
             setClientListData(response);
         } catch (error) {
@@ -57,23 +61,25 @@ function DashboardBody() {
                         </Button>
                     </div>
                     <div style={{ margin: "10px" }}>
-                       {localStorage.getItem("user_role") === '1' && <Button
-                            variant="contained"
-                            startIcon={<BsPlus style={{ fontSize: '1.2em' }} />}
-                            onClick={() => handleOpenModal(null)}
-                        >
-                            New Company
-                        </Button>
-                        }
-                         {localStorage.getItem("user_role") === '2' && <Link
-                         href="/admin/candidates/add-candidates" passHref style={{ textDecoration:"none"}}><Button
-                            variant="contained"
-                            startIcon={<BsPlus style={{ fontSize: '1.2em' }} />}
-                        >
-                            New Candidate
-                        </Button>
-                        </Link>
-                        }
+                        {userRole === '1' && (
+                            <Button
+                                variant="contained"
+                                startIcon={<BsPlus style={{ fontSize: '1.2em' }} />}
+                                onClick={() => handleOpenModal(null)}
+                            >
+                                New Company
+                            </Button>
+                        )}
+                        {userRole === '2' && (
+                            <Link href="/admin/candidates/add-candidates" passHref style={{ textDecoration: "none" }}>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<BsPlus style={{ fontSize: '1.2em' }} />}
+                                >
+                                    New Candidate
+                                </Button>
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>
@@ -87,8 +93,8 @@ function DashboardBody() {
                 open={isModalOpen}
                 onClose={handleCloseModal}
             >
-                <Grid >
-                    <Grid >
+                <Grid>
+                    <Grid>
                         <NewClientForm client={selectedClient} onClose={handleCloseModal} updateClientList={updateCandidateListByClientId} />
                     </Grid>
                 </Grid>

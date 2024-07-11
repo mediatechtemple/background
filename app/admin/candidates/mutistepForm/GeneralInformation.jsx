@@ -1,3 +1,4 @@
+"use client"
 import React, { useState, useEffect } from 'react';
 import { TextField, Autocomplete } from '@mui/material';
 import { _getAll } from "../../../../utils/apiUtils";
@@ -7,34 +8,36 @@ const GeneralInformation = ({ formData, setFormData }) => {
   const [companies, setCompanies] = useState([]);
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const[process,setProcess] = useState("");
-  const[processList,setProcessList]= useState([]);
+  const [process, setProcess] = useState("");
+  const [processList, setProcessList] = useState([]);
+  const [userRole, setUserRole] = useState(null);
+  const [clientId, setClientId] = useState(null);
 
   useEffect(() => {
+    // Simulate user role and client ID logic for testing, replace with actual logic
+    setUserRole('2'); // Example: Set userRole based on your logic
+    setClientId('example_client_id'); // Example: Set clientId based on your logic
+
     const fetchData = async () => {
       try {
-        
         const companiesData = await _getAll('/client');
-        if(localStorage.getItem("user_role") === '2') {
-          const updatedCompniesList = companiesData.find((rec) => {
-                rec.client_id = rec.id;
-            return rec.id == localStorage.getItem("client_id")
-          })
+
+        if (userRole === '2') {
+          const updatedCompaniesList = companiesData.find((rec) => rec.id == clientId);
           const updatedList = [];
-          updatedList.push(updatedCompniesList);
+          updatedList.push(updatedCompaniesList);
           setCompanies(updatedList);
-          setFormData(updatedCompniesList);
-          setProcessList(updatedCompniesList.process_list);
+          setFormData(updatedCompaniesList);
+          setProcessList(updatedCompaniesList.process_list);
         } else {
           setCompanies(companiesData);
         }
-       
+
         if (id) {
           const candidateData = await _getAll(`/candidate/${id}`);
-          console.log("this is candidate data",candidateData)
           setFormData(candidateData);
         } else {
-          if(localStorage.getItem("user_role") === '3') {
+          if (userRole === '3') {
             const data = await _getAll('/candidate');
             setFormData(data[0]);
           }
@@ -44,26 +47,27 @@ const GeneralInformation = ({ formData, setFormData }) => {
       }
     };
 
-    fetchData();
-  }, [id, setFormData]);
+    if (userRole !== null) {
+      fetchData();
+    }
+  }, [id, setFormData, userRole, clientId]);
 
   const handleCompanyChange = (event, newValue) => {
     setFormData((prevData) => ({
       ...prevData,
       client_id: newValue ? newValue.id : null,
     }));
-    const processData = companies.find((rec) => {
-      return rec.id === newValue.id
-    })
+    const processData = companies.find((rec) => rec.id === newValue.id);
     setProcessList(processData.process_list);
   };
-  const handleProcessChange = (event,newValue) => {
+
+  const handleProcessChange = (event, newValue) => {
     setFormData((prevData) => ({
       ...prevData,
-      process:newValue
-    }))
+      process: newValue
+    }));
     setProcess(newValue);
-  }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -74,12 +78,12 @@ const GeneralInformation = ({ formData, setFormData }) => {
   };
 
   const fields = [
-    { name: "notify_candidate", label: "E-mail Notification to candidate", type: "select", options: [{label:"Yes", value:true}, {label: "No",value:false}] },
-    { name: "notify_client", label: "E-mail Notification to client", type: "select", options: [{label:"Yes", value:true}, {label: "No",value:false}] },
-    { name: "notify_admin", label: "E-mail Notification to admin", type: "select", options: [{label:"Yes", value:true}, {label: "No",value:false}] },
-    { name: "form_filled_by", label: "Form Filled By", type: "select", options: [{label:"Candidate", value:"Candidate"}, {label: "Data Internal Team", value:"Data Internal Team"}] },
+    { name: "notify_candidate", label: "E-mail Notification to candidate", type: "select", options: [{ label: "Yes", value: true }, { label: "No", value: false }] },
+    { name: "notify_client", label: "E-mail Notification to client", type: "select", options: [{ label: "Yes", value: true }, { label: "No", value: false }] },
+    { name: "notify_admin", label: "E-mail Notification to admin", type: "select", options: [{ label: "Yes", value: true }, { label: "No", value: false }] },
+    { name: "form_filled_by", label: "Form Filled By", type: "select", options: [{ label: "Candidate", value: "Candidate" }, { label: "Data Internal Team", value: "Data Internal Team" }] },
     { name: "client_id", label: "Company (Auto Assign to Client Portal)", type: "text" },
-    {name: "process", label: "process (Auto Assign to Client Portal)", type: "text" },
+    { name: "process", label: "Process (Auto Assign to Client Portal)", type: "text" },
     { name: "name", label: "Candidate Name", type: "text" },
     { name: "dob", label: "Candidate DOB", type: "date" },
     { name: "father_name", label: "Candidate Father’s Name", type: "text" },
@@ -96,21 +100,21 @@ const GeneralInformation = ({ formData, setFormData }) => {
             <Autocomplete
               value={companies.find(company => company.id === formData.client_id) || null}
               onChange={handleCompanyChange}
-              disabled = {localStorage.getItem("user_role") === '2'}
+              disabled={userRole === '2'}
               options={companies}
               getOptionLabel={(option) => option.name}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   name="client_id"
-                  label="Company "
+                  label="Company"
                   variant="outlined"
                   fullWidth
                   margin="normal"
                 />
               )}
             />
-          ):field.name === "process" ? (
+          ) : field.name === "process" ? (
             <Autocomplete
               value={process}
               onChange={handleProcessChange}
@@ -120,7 +124,7 @@ const GeneralInformation = ({ formData, setFormData }) => {
                 <TextField
                   {...params}
                   name="process"
-                  label="Process "
+                  label="Process"
                   variant="outlined"
                   fullWidth
                   margin="normal"
@@ -131,7 +135,7 @@ const GeneralInformation = ({ formData, setFormData }) => {
             <TextField
               select
               name={field.name}
-              value={formData[field.name] || field.options[0]}
+              value={formData[field.name] || field.options[0].value}
               onChange={handleChange}
               label={field.label}
               variant="outlined"

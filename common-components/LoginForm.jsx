@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { TextField, Button, Grid, Typography } from '@mui/material';
 import { FaUser, FaLock } from 'react-icons/fa'; 
-import { _create, _createlogin } from '../utils/apiUtils';
+import { _createlogin } from '../utils/apiUtils';
 
 const LoginForm = () => {
     const [formData, setFormData] = useState({
@@ -28,20 +28,14 @@ const LoginForm = () => {
         try {
             const response = await _createlogin('/users/login', formData);
             console.log(response);
-            const { token,user_role } = response; 
-            localStorage.setItem('token', token);
-            localStorage.setItem('user_role', user_role);
-            if(user_role === 2) {
-                localStorage.setItem('client_id', response?.client_id);
-            }
-            setFormData({ username: '', password: '' }); 
-            setError(null); 
+            const { user_role } = response; 
+
             if(user_role === 3) {
-             router.push('/admin/candidates/add-candidates');
+                router.push('/admin/candidates/add-candidates');
             } else if (user_role === 2) {
                 router.push('/admin/companies');
-            }else {
-            router.push('/admin/admin-dashboard');
+            } else {
+                router.push('/admin/admin-dashboard');
             }
             
         } catch (error) {
